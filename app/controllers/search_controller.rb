@@ -4,6 +4,7 @@ class SearchController < UIViewController
 
   layout do
     subview("search-bg".uiimageview, :background)
+    subview(MySearchBar.alloc.initWithFrame([[0, 0], [320, 88]]), :search, delegate: self)
     subview(UIView, :label_container) do
       subview("Search the NYTimes Best Seller's List!".uilabel, :text)
     end
@@ -25,7 +26,7 @@ Teacup::Stylesheet.new(:search_controller) do
   style :label_container,
         constraints: [
           constrain_left(0),
-          constrain_top(0),
+          constrain_below(:search,0),
           constrain_height(100),
           constrain_width(150)
         ],
