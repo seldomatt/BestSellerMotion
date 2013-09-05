@@ -15,3 +15,6 @@ nbproject
 .sass-cache
 .idea
 resources/app.yml
+
+# Ignore motion-config-vars config file
+resources/app.yml

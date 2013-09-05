@@ -14,6 +14,24 @@ class SearchController < UIViewController
     navigationController.navigationBarHidden = true
   end
 
+  #delegate method
+  def searchBarSearchButtonClicked(searchBar)
+    search_best_sellers(searchBar)
+    searchBar.resignFirstResponder
+  end
+
+  def search_best_sellers(searchBar)
+    search_scope = MySearchBar::SCOPES[searchBar.selectedScopeButtonIndex]
+    search_text = searchBar.text
+    BestSellerApi.search(search_text, search_scope) do |data, error|
+      if error
+        App.alert("Server Error")
+      else
+        p "results data: #{data}"
+      end
+    end
+  end
+
 end
 
 Teacup::Stylesheet.new(:search_controller) do
