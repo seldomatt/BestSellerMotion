@@ -9,4 +9,7 @@ Motion::Project::App.setup do |app|
   app.name = 'BestSeller'
   app.icons = ["icon@2x.png", "icon.png"]
   app.prerendered_icon = true
+  app.pods do
+    pod 'MBProgressHUD'
+  end
 end

@@ -21,14 +21,19 @@ class SearchController < UIViewController
   end
 
   def search_best_sellers(searchBar)
+    hud = MBProgressHUD.showHUDAddedTo(view, animated: true)
+    hud.labelText = "Searching..."
     search_scope = MySearchBar::SCOPES[searchBar.selectedScopeButtonIndex]
     search_text = searchBar.text
-    BestSellerApi.search(search_text, search_scope) do |data, error|
-      if error
-        App.alert("Server Error")
-      else
-        results_controller = SearchResultsController.alloc.initWithResults(data["results"])
-        navigationController.pushViewController(results_controller, animated:true)
+    5.seconds.later do
+      BestSellerApi.search(search_text, search_scope) do |data, error|
+        if error
+          App.alert("Server Error")
+        else
+          results_controller = SearchResultsController.alloc.initWithResults(data["results"])
+          navigationController.pushViewController(results_controller, animated: true)
+        end
+        MBProgressHUD.hideHUDForView(view, animated: true)
       end
     end
   end
@@ -45,7 +50,7 @@ Teacup::Stylesheet.new(:search_controller) do
   style :label_container,
         constraints: [
           constrain_left(0),
-          constrain_below(:search,0),
+          constrain_below(:search, 0),
           constrain_height(100),
           constrain_width(150)
         ],
