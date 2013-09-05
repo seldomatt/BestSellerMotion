@@ -27,7 +27,8 @@ class SearchController < UIViewController
       if error
         App.alert("Server Error")
       else
-        p "results data: #{data}"
+        results_controller = SearchResultsController.alloc.initWithResults(data["results"])
+        navigationController.pushViewController(results_controller, animated:true)
       end
     end
   end
