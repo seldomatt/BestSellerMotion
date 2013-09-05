@@ -11,5 +11,6 @@ Motion::Project::App.setup do |app|
   app.prerendered_icon = true
   app.pods do
     pod 'MBProgressHUD'
+    pod 'SVPullToRefresh'
   end
 end

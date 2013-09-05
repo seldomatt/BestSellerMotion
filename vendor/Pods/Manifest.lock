@@ -1,10 +1,13 @@
 PODS:
   - MBProgressHUD (0.7)
+  - SVPullToRefresh (0.4.1)
 
 DEPENDENCIES:
   - MBProgressHUD
+  - SVPullToRefresh
 
 SPEC CHECKSUMS:
   MBProgressHUD: 1fd8591a2216d5dec6de24e09187bb03bcbe9946
+  SVPullToRefresh: 61a0e4bd12bd6f8e3465909810b0fbeb1a28d5f2
 
 COCOAPODS: 0.24.0

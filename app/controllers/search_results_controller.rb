@@ -2,34 +2,61 @@ class SearchResultsController < UIViewController
 
   stylesheet :search_results
 
-  def initWithResults(results)
+  def initWithResults(results, query: query, andScope: scope)
     init.tap do
       @results = results
+      @query = query
+      @scope = scope
+      @iterator = 0
       self.title = "Results"
     end
   end
 
   layout :root do
-    @table = subview(UITableView, :results_table, delegate:self, dataSource: self)
+    @table = subview(UITableView, :results_table, delegate: self, dataSource: self)
+    @table.addInfiniteScrollingWithActionHandler(lambda { load_more_results })
   end
 
   def layoutDidLoad
     setup_navbar
     App.alert("No search results") if @results.empty?
-    @table.registerClass(SearchResultsTableViewCell, forCellReuseIdentifier:"cell_identifier")
+    @table.registerClass(SearchResultsTableViewCell, forCellReuseIdentifier: "cell_identifier")
+  end
+
+  #infinite scrolling
+  def load_more_results
+    @iterator +=1
+    BestSellerApi.search(@query, @scope, offset="#{20*@iterator}") do |data, error|
+      if error
+        App.alert(error)
+      else
+        @table.showsInfiniteScrolling = false if data["results"].empty?
+        unless data["results"].empty?
+          @table.beginUpdates
+          start_index = @results.size
+          @results += data["results"]
+          index_paths = (start_index...@results.size).collect do |i|
+            NSIndexPath.indexPathForRow(i, inSection: 0)
+          end
+          @table.insertRowsAtIndexPaths(index_paths, withRowAnimation: UITableViewRowAnimationTop)
+          @table.endUpdates
+        end
+      end
+      @table.infiniteScrollingView.stopAnimating
+    end
   end
 
   #tableView dataSource protocols
-  def tableView(tableView, numberOfRowsInSection:section)
+  def tableView(tableView, numberOfRowsInSection: section)
     @results.length
   end
 
-  def tableView(tableView, heightForRowAtIndexPath:indexPath)
+  def tableView(tableView, heightForRowAtIndexPath: indexPath)
     105
   end
 
-  def tableView(tableView, cellForRowAtIndexPath:indexPath)
-    tableView.dequeueReusableCellWithIdentifier("cell_identifier", forIndexPath:indexPath).tap do |cel|
+  def tableView(tableView, cellForRowAtIndexPath: indexPath)
+    tableView.dequeueReusableCellWithIdentifier("cell_identifier", forIndexPath: indexPath).tap do |cel|
       cel.title.text = normalize(@results[indexPath.row]["title"])
       cel.author.text = @results[indexPath.row]["author"]
       cel.publisher.text = @results[indexPath.row]["publisher"]
@@ -55,7 +82,7 @@ class SearchResultsController < UIViewController
 
   def normalize(text)
     split = text.split(" ")
-    normalized = split.map{|word| word.capitalize}
+    normalized = split.map { |word| word.capitalize }
     normalized.join(" ")
   end
 

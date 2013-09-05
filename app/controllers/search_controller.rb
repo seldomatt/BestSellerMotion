@@ -30,7 +30,7 @@ class SearchController < UIViewController
         if error
           App.alert("Server Error")
         else
-          results_controller = SearchResultsController.alloc.initWithResults(data["results"])
+          results_controller = SearchResultsController.alloc.initWithResults(data["results"], query:search_text, andScope:search_scope)
           navigationController.pushViewController(results_controller, animated: true)
         end
         MBProgressHUD.hideHUDForView(view, animated: true)
