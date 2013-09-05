@@ -16,15 +16,24 @@ class SearchResultsController < UIViewController
   def layoutDidLoad
     setup_navbar
     App.alert("No search results") if @results.empty?
+    @table.registerClass(SearchResultsTableViewCell, forCellReuseIdentifier:"cell_identifier")
   end
 
-  #tableview datasource protocols
+  #tableView dataSource protocols
   def tableView(tableView, numberOfRowsInSection:section)
     @results.length
   end
 
+  def tableView(tableView, heightForRowAtIndexPath:indexPath)
+    105
+  end
+
   def tableView(tableView, cellForRowAtIndexPath:indexPath)
-    UITableViewCell.alloc.initWithStyle(UITableViewCellStyleDefault, reuseIdentifier: nil)
+    tableView.dequeueReusableCellWithIdentifier("cell_identifier", forIndexPath:indexPath).tap do |cel|
+      cel.title.text = normalize(@results[indexPath.row]["title"])
+      cel.author.text = @results[indexPath.row]["author"]
+      cel.publisher.text = @results[indexPath.row]["publisher"]
+    end
   end
 
   private
@@ -64,6 +73,8 @@ Teacup::Stylesheet.new(:search_results) do
   style :results_table,
         constraints: [
           :full
-        ]
+        ],
+        separatorStyle: UITableViewCellSeparatorStyleNone,
+        backgroundColor: UIColor.colorWithPatternImage("table-bg".uiimage)
 
 end
